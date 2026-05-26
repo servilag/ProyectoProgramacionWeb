@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MercadoUis{% endblock %}</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --uis-verde: #1A7236;      /* Verde institucional principal */
+            --uis-verde-oscuro: #114e24;
+            --uis-amarillo: #FFCC00;   /* Amarillo institucional */
+            --uis-gris-claro: #F8F9FA;
+        }
+
+        body {
+            background-color: #f4f6f8;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Ajuste fino para los componentes que usan los colores UIS */
+        .bg-uis-verde { background-color: var(--uis-verde) !important; }
+        .text-uis-verde { color: var(--uis-verde) !important; }
+        .btn-uis {
+            background-color: var(--uis-verde);
+            color: white !important;
+            border: none;
+        }
+        .btn-uis:hover {
+            background-color: var(--uis-verde-oscuro);
+        }
+        .badge-uis-amarillo {
+            background-color: var(--uis-amarillo);
+            color: #333;
+        }
+        main { flex: 1; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-uis-verde shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-4 d-flex align-items-center" href="{% url 'productos_lista' %}">
+                <span style="color: var(--uis-amarillo);">Mercado</span>Uis 🛒
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    
+                    <li class="nav-item">
+                        <a class="nav-link px-3" href="{% url 'productos_lista' %}">
+                            <i class="bi bi-house-door-fill me-1"></i>Inicio
+                        </a>
+                    </li>
+
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link px-3" href="{% url 'nuevo_producto' %}">
+                                <i class="bi bi-plus-circle-fill me-1"></i>Vender
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link px-3 position-relative" href="{% url 'ver_carrito' %}">
+                                <i class="bi bi-cart-fill fs-5"></i>
+                                {% if cart and cart|length > 0 %}
+                                    <span class="position-absolute top-1 start-100 translate-middle badge rounded-pill badge-uis-amarillo fw-bold shadow-sm">
+                                        {{ cart|length }}
+                                    </span>
+                                {% endif %}
+                            </a>
+                        </li>
+
+                        <li class="nav-item dropdown ms-lg-2">
+                            <a class="nav-link dropdown-toggle btn btn-light text-dark btn-sm px-3 mt-2 mt-lg-0 rounded-pill fw-medium" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle me-1 text-uis-verde"></i>{{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" aria-labelledby="navbarDropdown">
+                                <li>
+                                    <a class="dropdown-menu-item dropdown-item py-2" href="{% url 'perfil' %}">
+                                        <i class="bi bi-person shadow-none me-2"></i>Mi Perfil
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form action="{% url 'logout' %}" method="post" class="d-inline w-100">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item text-danger py-2 w-100 text-start" style="background: none; border: none;">
+                                            <i class="bi bi-box-arrow-right me-2"></i>Salir
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link px-3" href="{% url 'login' %}">Iniciar Sesión</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-sm btn-light px-3 ms-lg-2 mt-2 mt-lg-0 fw-medium rounded-pill text-uis-verde" href="{% url 'registro' %}">Registrarse</a>
+                        </li>
+                    {% endif %}
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="bg-dark text-white py-4 mt-auto border-top border-4 border-warning">
+        <div class="container text-center">
+            <p class="mb-1 fw-bold"><span style="color: var(--uis-amarillo);">Mercado</span>Uis</p>
+            <p class="small text-muted mb-0">Plataforma de comercio estudiantil seguro • Universidad Industrial de Santander</p>
+            <p class="x-small text-secondary mt-2" style="font-size: 0.75rem;">© 2026 - Proyecto de Curso Académico</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

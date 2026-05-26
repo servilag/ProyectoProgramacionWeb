@@ -1,0 +1,113 @@
+{% extends 'post/base.html' %}
+
+{% block content %}
+<div class="container my-5 d-flex justify-content-center">
+    <div class="card shadow" style="max-width: 650px; width: 100%; border-radius: 12px; border-top: 6px solid var(--uis-verde);">
+        <div class="card-body p-4">
+            
+            <div class="text-center mb-4">
+                <h2 style="color: var(--uis-verde); font-weight: 700; margin-bottom: 5px;">
+                    Editar Producto ✏️
+                </h2>
+                <p class="text-muted small">
+                    Modifica los campos necesarios para actualizar tu publicación en el campus.
+                </p>
+            </div>
+
+            <form action="{% url 'editar_producto' producto.id %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label fw-bold text-secondary small">
+                            {{ field.label }}
+                        </label>
+
+                        {% if field.field.widget.input_type == "checkbox" %}
+                            <div class="form-check form-switch p-1 ps-5">
+                                {{ field }}
+                            </div>
+                        {% elif "checkbox" in field.field.widget.render %}
+                            <div class="p-3 border rounded bg-light container-categorias-edit">
+                                {{ field }}
+                            </div>
+                        {% else %}
+                            {{ field }}
+                        {% endif %}
+
+                        {% if field.help_text %}
+                            <div class="form-text text-muted x-small">{{ field.help_text }}</div>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <div class="text-danger small mt-1">⚠️ {{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                {% if producto.image %}
+                    <div class="mb-4 p-3 bg-light rounded text-center border">
+                        <span class="d-block text-muted small fw-medium mb-2">Vista previa de la imagen actual:</span>
+                        <img src="{{ producto.image.url }}" alt="Actual" class="img-thumbnail" style="max-height: 150px; object-fit: contain;">
+                    </div>
+                {% endif %}
+
+                <hr class="my-4" style="border-color: #e0e0e0;">
+
+                <div class="row g-2">
+                    <div class="col-6">
+                        <button type="submit" class="btn text-white w-100 py-2 btn-uis-guardar" style="background-color: var(--uis-verde); font-weight: 600; border-radius: 6px; border: none;">
+                            Guardar Cambios  ✅
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <a href="{% url 'perfil' %}" class="btn btn-outline-secondary w-100 py-2" style="border-radius: 6px; font-weight: 500; text-decoration: none; display: block; text-align: center;">
+                            Cancelar
+                        </a>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// REEMPLAZA EL SCRIPT INFERIOR EN NUEVO_PRODUCTO.HTML Y EDITAR_PRODUCTO.HTML por este:
+document.querySelectorAll('input, textarea, select').forEach(function(el) {
+    if (el.type === 'checkbox') {
+        // 🚨 CLAVE: Agregar la clase correcta de checkbox para Bootstrap
+        el.classList.add('form-check-input');
+        // 🔥 IMPORTANTE: Asegurar que NO tenga 'form-control' para que guarde bien el estado
+        el.classList.remove('form-control'); 
+    } else {
+        el.classList.add('form-control');
+    }
+});
+
+// Mantén aquí abajo la lógica de formatear la lista de categorías si la tenías...
+const catContainerEdit = document.querySelector('.container-categorias-edit ul');
+if (catContainerEdit) {
+    catContainerEdit.style.listStyle = 'none';
+    catContainerEdit.style.paddingLeft = '0';
+    catContainerEdit.style.margin = '0';
+    catContainerEdit.querySelectorAll('li').forEach(li => {
+        li.classList.add('form-check', 'form-check-inline', 'me-3', 'mb-2');
+        let label = li.querySelector('label');
+        if(label) label.classList.add('form-check-label', 'small');
+    });
+}
+</script>
+
+<style>
+    .form-control:focus, .form-check-input:focus {
+        border-color: var(--uis-verde);
+        box-shadow: 0 0 0 0.25rem rgba(26, 114, 54, 0.25);
+    }
+    .btn-uis-guardar:hover {
+        background-color: var(--uis-verde-oscuro) !important;
+        transform: translateY(-0.5px);
+        transition: all 0.2s ease-in-out;
+    }
+    .x-small { font-size: 0.78rem; }
+</style>
+{% endblock %}

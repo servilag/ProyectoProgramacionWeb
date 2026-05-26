@@ -1,0 +1,198 @@
+{% extends 'post/base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row g-4">
+        
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 text-center p-4 bg-white" style="border-radius: 16px;">
+                <div class="mb-3 position-relative d-inline-block mx-auto">
+                    <i class="bi bi-person-circle" style="font-size: 6rem; color: var(--uis-verde);"></i>
+                </div>
+                <h4 class="fw-bold text-dark mb-1">@{{ request.user.username }}</h4>
+                <p class="text-muted small mb-3">{{ request.user.email }}</p>
+                
+                <div class="d-flex justify-content-center gap-2 mb-3">
+                    <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1.5 rounded-pill fw-semibold">
+                        <i class="bi bi-shield-check me-1"></i>Comerciante UIS
+                    </span>
+                    {% if request.user.is_staff %}
+                        <span class="badge bg-dark text-white px-3 py-1.5 rounded-pill fw-semibold">
+                            <i class="bi bi-terminal me-1"></i>Admin
+                        </span>
+                    {% endif %}
+                </div>
+                
+                <hr class="text-muted opacity-25My">
+                
+                <div class="text-start bg-light p-3 rounded-3 small">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-secondary">Productos Activos:</span>
+                        <span class="fw-bold text-dark">{{ productos.count }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-secondary">Compras Registradas:</span>
+                        <span class="fw-bold text-dark">{{ mis_compras.count }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 p-4 bg-white" style="border-radius: 16px; min-height: 500px;">
+                
+                <ul class="nav nav-tabs mb-4 border-bottom" id="perfilTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active fw-bold text-secondary px-3 py-2.5 shadow-none" id="productos-tab" data-bs-toggle="tab" data-bs-target="#productos-panel" type="button" role="tab">
+                            <i class="bi bi-grid-3x3-gap-fill me-1.5"></i>Mis Publicaciones
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link fw-bold text-secondary px-3 py-2.5 shadow-none" id="compras-tab" data-bs-toggle="tab" data-bs-target="#compras-panel" type="button" role="tab">
+                            <i class="bi bi-bag-check-fill me-1.5"></i>Mis Compras
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link fw-bold text-secondary px-3 py-2.5 shadow-none" id="config-tab" data-bs-toggle="tab" data-bs-target="#config-panel" type="button" role="tab">
+                            <i class="bi bi-gear-fill me-1.5"></i>Ajustes de Cuenta
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="perfilTabsContent">
+                    
+                    <div class="tab-pane fade show active" id="productos-panel" role="tabpanel" aria-labelledby="productos-tab">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold text-dark m-0">Gestionar mis productos</h5>
+                            <a href="{% url 'nuevo_producto' %}" class="btn btn-sm text-white px-3 fw-medium" style="background-color: var(--uis-verde); border-radius: 8px;">
+                                <i class="bi bi-plus-circle-fill me-1"></i>Nuevo Producto
+                            </a>
+                        </div>
+
+                        <div class="row row-cols-1 row-cols-sm-2 g-3">
+                            {% for prod in productos %}
+                                <div class="col">
+                                    <div class="card h-100 border rounded-3 bg-light p-3 position-relative d-flex flex-row gap-3">
+                                        <div class="bg-white rounded border d-flex align-items-center justify-content-center p-2" style="width: 80px; height: 80px; min-width: 80px;">
+                                            {% if prod.image %}
+                                                <img src="{{ prod.image.url }}" class="img-fluid h-100 object-fit-contain" alt="">
+                                            {% else %}
+                                                <i class="bi bi-image text-muted fs-4"></i>
+                                            {% endif %}
+                                        </div>
+                                        <div class="d-flex flex-column justify-content-between w-100 overflow-hidden">
+                                            <div>
+                                                <h6 class="fw-bold text-dark text-truncate mb-0" style="font-size: 0.95rem;">{{ prod.title }}</h6>
+                                                <span class="fw-bold text-success small">${{ prod.price }}</span>
+                                            </div>
+                                            <div class="d-flex gap-1.5">
+                                                <a href="{% url 'editar_producto' prod.id %}" class="btn btn-xs btn-outline-dark px-2 rounded">Editar</a>
+                                                <button type="button" class="btn btn-xs btn-danger px-2 rounded" data-bs-toggle="modal" data-bs-target="#delModal-{{ prod.id }}">Eliminar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal fade" id="delModal-{{ prod.id }}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered modal-sm">
+                                        <div class="modal-content border-0 shadow">
+                                            <div class="modal-body p-4 text-center">
+                                                <h6 class="fw-bold text-dark mb-2">¿Seguro que quieres borrar este producto?</h6>
+                                                <p class="text-muted small mb-4">"{{ prod.title }}"</p>
+                                                <div class="d-flex gap-2">
+                                                    <button type="button" class="btn btn-sm btn-light flex-fill" data-bs-dismiss="modal">Cancelar</button>
+                                                    <form action="{% url 'borrar_producto' prod.id %}" method="post" class="m-0 flex-fill">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="btn btn-sm btn-danger w-100 fw-bold">Sí, eliminar</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <div class="col-12 text-center py-5 text-muted">
+                                    <i class="bi bi-grid text-black-50 fs-2 d-block mb-2"></i>
+                                    <p class="small mb-0">No tienes ningún artículo publicado todavía.</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="compras-panel" role="tabpanel" aria-labelledby="compras-tab">
+                        <h5 class="fw-bold mb-3 text-dark">Historial de compras</h5>
+                        
+                        <div class="table-responsive bg-white rounded-3 border">
+                            <table class="table table-hover align-middle mb-0 small">
+                                <thead class="table-light text-secondary">
+                                    <tr>
+                                        <th class="ps-3">Código</th>
+                                        <th>Artículo</th>
+                                        <th>Total Pagado</th>
+                                        <th>Fecha</th>
+                                        <th class="pe-3 text-end">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for Compra in mis_compras %}
+                                    <tr>
+                                        <td class="ps-3 fw-bold text-secondary">#{{ Compra.id }}</td>
+                                        <td class="fw-semibold text-dark">{{ Compra.producto.title }}</td>
+                                        <td class="text-success fw-bold">${{ Compra.precio_pagado }}</td>
+                                        <td class="text-muted">{{ Compra.fecha_compra|date:"d/m/Y h:i a" }}</td>
+                                        <td class="pe-3 text-end">
+                                            <span class="badge bg-success-subtle text-success px-2 rounded-pillfw-medium">Entregado ✅</span>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center py-5 text-muted">
+                                            <i class="bi bi-cart-x text-black-50 d-block mb-2" style="font-size: 2.5rem;"></i>
+                                            <p class="mb-0 small fw-medium">No registras órdenes de compra en MercadoUis por ahora.</p>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="config-panel" role="tabpanel" aria-labelledby="config-tab">
+                        <h5 class="fw-bold mb-3 text-dark">Configuración del Perfil</h5>
+                        <div class="p-4 bg-light rounded-3 border">
+                            <p class="small text-muted mb-4"><i class="bi bi-info-circle-fill text-uis-verde me-1"></i>Aquí puedes actualizar los datos de contacto institucionales que verán los demás estudiantes de la UIS.</p>
+                            
+                            <form method="post" action="">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-secondary">Nombre de usuario</label>
+                                    <input type="text" class="form-control bg-white shadow-none" value="{{ request.user.username }}" disabled>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-secondary">Correo institucional</label>
+                                    <input type="email" class="form-control bg-white shadow-none" value="{{ request.user.email }}" disabled>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-dark px-4 py-2 mt-2" style="border-radius: 6px;" disabled>
+                                    Guardar Cambios
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                </div> </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    /* Clases de utilidad minúsculas */
+    .btn-xs { padding: 0.25rem 0.5rem; font-size: 0.75rem; }
+    .shadow-xs { box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+    .nav-tabs .nav-link.active {
+        color: var(--uis-verde) !important;
+        border-color: transparent transparent var(--uis-verde) !important;
+        border-width: 3px !important;
+    }
+</style>
+{% endblock %}

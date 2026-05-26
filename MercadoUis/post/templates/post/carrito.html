@@ -1,0 +1,75 @@
+{% extends 'post/base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <h3 class="fw-bold text-dark mb-4">🛒 Tu Carrito de Compras - MercadoUis</h3>
+
+    <div class="row g-4">
+        <div class="col-md-8">
+            <div class="card p-3 shadow-sm border-0 bg-white">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr class="text-secondary small">
+                                <th>Artículo</th>
+                                <th>Precio</th>
+                                <th class="text-end">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                            <tr>
+                                <td>
+                                    <span class="fw-bold text-dark">{{ item.producto.title }}</span>
+                                </td>
+
+                                <td class="fw-bold text-success">${{ item.producto.price }}</td>
+
+                                <td class="text-end">
+                                    <span
+                                        class="badge bg-success-subtle text-success rounded-pill px-2.5 py-1 small fw-semibold">Listo
+                                        para comprar</span>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center py-5 text-muted">
+                                    <i class="bi bi-cart-x text-black-50 d-block mb-2" style="font-size: 2.5rem;"></i>
+                                    <p class="mb-0 small fw-medium">Tu carrito está vacío. ¡Añade artículos desde el
+                                        catálogo!</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <a href="{% url 'productos_lista' %}" class="btn btn-sm btn-outline-secondary mt-3 align-self-start">
+                    ← Seguir viendo productos
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card p-4 shadow-sm border-0 bg-light text-dark">
+                <h5 class="fw-bold mb-3">Resumen de Orden</h5>
+                <div class="d-flex justify-content-between mb-4">
+                    <span class="text-secondary">Total a transferir:</span>
+                    <span class="fs-4 fw-bold text-success">${{ total }}</span>
+                </div>
+
+                {% if items %}
+                <form action="{% url 'procesar_pago' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn text-white w-100 py-2.5 fw-bold shadow-none"
+                        style="background-color: var(--uis-verde); border-radius: 8px;">
+                        💳 Confirmar y Pagar Transacción
+                    </button>
+                </form>
+                {% else %}
+                <button class="btn btn-secondary w-100 py-2.5 fw-bold" disabled>Carrito vacío</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

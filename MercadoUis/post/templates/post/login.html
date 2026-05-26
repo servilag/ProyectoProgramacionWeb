@@ -1,0 +1,79 @@
+{% extends 'post/base.html' %}
+
+{% block content %}
+<div class="container my-5 d-flex justify-content-center align-items-center" style="min-height: 65vh;">
+    <div class="card shadow border-0" style="max-width: 450px; width: 100%; border-radius: 12px; border-top: 6px solid var(--uis-verde);">
+        <div class="card-body p-4.5">
+            
+            <div class="text-center mb-4">
+                <h2 class="fw-bold text-dark mb-1">Iniciar Sesión</h2>
+                <p class="text-muted small">Ingresa tus credenciales para acceder a <span class="fw-bold text-uis-verde">MercadoUis</span></p>
+            </div>
+
+            {% if form.errors %}
+                <div class="alert alert-danger py-2 px-3 small rounded-3 mb-3" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-1.5"></i> Usuario o contraseña incorrectos. Por favor, intenta de nuevo.
+                </div>
+            {% endif %}
+
+            <form method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="id_username" class="form-label small fw-bold text-secondary">Nombre de usuario</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted border-end-0" style="border-radius: 8px 0 0 8px;">
+                            <i class="bi bi-person-fill"></i>
+                        </span>
+                        <input type="text" name="username" id="id_username" class="form-control border-start-0 shadow-none ps-1" placeholder="Ej. pedro.perez" required style="border-radius: 0 8px 8px 0; height: 42px;">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="id_password" class="form-label small fw-bold text-secondary">Contraseña</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted border-end-0" style="border-radius: 8px 0 0 8px;">
+                            <i class="bi bi-lock-fill"></i>
+                        </span>
+                        <input type="password" name="password" id="id_password" class="form-control border-start-0 shadow-none ps-1" placeholder="••••••••" required style="border-radius: 0 8px 8px 0; height: 42px;">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn w-100 py-2 text-white fw-bold mb-3 btn-uis-login" style="background-color: var(--uis-verde); border-radius: 8px; border: none; height: 44px;">
+                    Ingresar 🚀
+                </button>
+
+                <div class="text-center mt-3 pt-2 border-top border-light">
+                    <p class="small text-muted mb-0">
+                        ¿No tienes una cuenta aún? <a href="{% url 'registro' %}" class="text-decoration-none fw-medium text-uis-verde hover-subrayado">Regístrate aquí</a>
+                    </p>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Efecto interactivo sutil para el botón */
+    .btn-uis-login:hover {
+        background-color: var(--uis-verde-oscuro) !important;
+        transform: translateY(-0.5px);
+        transition: all 0.2s ease-in-out;
+    }
+    .hover-subrayado:hover {
+        text-decoration: underline !important;
+    }
+    /* Estilo para los inputs enfocados */
+    .form-control:focus {
+        border-color: #ced4da !important;
+    }
+    .input-group:focus-within .input-group-text {
+        border-color: var(--uis-verde) !important;
+        color: var(--uis-verde) !important;
+    }
+    .input-group:focus-within .form-control {
+        border-color: var(--uis-verde) !important;
+    }
+</style>
+{% endblock %}

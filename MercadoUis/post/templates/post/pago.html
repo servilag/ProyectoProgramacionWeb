@@ -1,0 +1,82 @@
+{% extends 'post/base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-7">
+            <div class="card p-4 shadow-sm mb-4">
+                <h3 class="mb-4" style="color: var(--uis-verde); font-weight: 600;">Método de Pago</h3>
+                <form action="{% url 'procesar_pago' %}" method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight: 500;">Nombre en la Tarjeta</label>
+                        <input type="text" class="form-control" placeholder="Juan Pérez" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" style="font-weight: 500;">Número de Tarjeta</label>
+                            <input type="text" class="form-control" placeholder="XXXX XXXX XXXX XXXX" maxlength="16" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label" style="font-weight: 500;">Expiración</label>
+                            <input type="text" class="form-control" placeholder="MM/AA" maxlength="5" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label" style="font-weight: 500;">CVV</label>
+                            <input type="password" class="form-control" placeholder="***" maxlength="3" required>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+                    <p class="text-muted small">
+                        * Al hacer clic en "Finalizar Compra", se procesará el pago de manera segura dentro de la plataforma simulación de MercadoUis.
+                    </p>
+
+                    <button type="submit" class="btn w-100 py-2 text-white" style="background-color: var(--uis-verde); font-weight: 500; border-radius: 6px;">
+                        Finalizar Compra 💳
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="card p-4 shadow-sm" style="background-color: #fafafa;">
+                <h4 class="mb-3" style="font-weight: 600;">Resumen del Pedido</h4>
+                
+                <div class="productos-pago-lista" style="max-height: 240px; overflow-y: auto; margin-bottom: 15px;">
+                    {% for item in cart %}
+                    <div class="d-flex justify-content-between align-items-center mb-2 pb-2" style="border-bottom: 1px solid #eee;">
+                        <div>
+                            <span class="fw-bold" style="color: #333;">{{ item.product.title }}</span>
+                            <br>
+                            <small class="text-muted">Cantidad: {{ item.quantity }}</small>
+                        </div>
+                        <span class="text-muted">${{ item.total_price }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Subtotal:</span>
+                    <strong>${{ cart.get_total_price }}</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Envío Campus:</span>
+                    <span class="text-success fw-bold">Gratis</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="fs-5 fw-bold">Total a Pagar:</span>
+                    <span class="fs-5 fw-bold" style="color: var(--uis-verde);">${{ cart.get_total_price }}</span>
+                </div>
+
+                <a href="{% url 'cart_detail' %}" class="btn btn-sm btn-outline-secondary w-100">
+                    Volver al Carrito
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
