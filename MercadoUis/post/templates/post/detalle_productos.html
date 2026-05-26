@@ -70,8 +70,7 @@
                                 <h6 class="fw-bold text-dark mb-3">"{{ producto.title }}"</h6>
                                 <p class="text-danger small mb-0 p-2 bg-white rounded-2 border"
                                     style="font-size: 0.82rem;">
-                                    <strong>Nota de Moderación:</strong> El usuario <em>@{{ producto.author.username
-                                        }}</em> será notificado implícitamente al desaparecer su producto del catálogo.
+                                    <strong>Nota de Moderación:</strong> El usuario <em>@{{ producto.author.username}}</em> será notificado implícitamente al desaparecer su producto del catálogo.
                                 </p>
                             </div>
                             <div class="modal-footer border-0 p-3 bg-light d-flex gap-2"
@@ -103,7 +102,21 @@
                     style="background-color: #fcfcfc; border-left: 5px solid var(--uis-verde);">
                     <span class="text-muted d-block small text-uppercase fw-bold mb-1"
                         style="letter-spacing: 0.5px;">Precio unitario</span>
-                    <span class="fs-1 fw-bold" style="color: var(--uis-verde); font-family: sans-serif;">${{producto.price }}</span>
+                    <div class="price-container">
+                        {% if producto.discount > 0 %}
+                        <span class="text-decoration-line-through text-muted me-2" style="font-size: 1.1rem;">
+                            ${{ producto.price }}
+                        </span>
+
+                        <span class="fw-bold text-danger fs-4">
+                            ${{ producto.precio_final }}
+                        </span>
+
+                        <span class="badge bg-danger ms-2">{{ producto.discount }}% OFF</span>
+                        {% else %}
+                        <span class="fw-bold text-dark fs-4">${{ producto.price }}</span>
+                        {% endif %}
+                    </div>
 
                     <div class="mt-2">
                         {% if producto.on_sale %}
@@ -123,7 +136,7 @@
                 <div class="mb-4">
                     <h5 class="fw-bold text-dark mb-2">Descripción</h5>
                     <p class="text-secondary" style="line-height: 1.6; white-space: pre-line;">
-                        {{ producto.description|default:"El vendedor no especificó detalles adicionales para este artículo." }}
+                        {{ producto.description|default:"El vendedor no especificó detalles adicionales para esteartículo." }}
                     </p>
                 </div>
 
@@ -137,7 +150,8 @@
                         </button>
                     </form>
                     {% else %}
-                    <div class="alert alert-warning border-0 p-3 rounded-3 d-flex align-items-center gap-2 small" role="alert">
+                    <div class="alert alert-warning border-0 p-3 rounded-3 d-flex align-items-center gap-2 small"
+                        role="alert">
                         <i class="bi bi-exclamation-octagon-fill fs-5"></i>
                         Este artículo ya fue vendido o no se encuentra disponible temporalmente. ¡Prueba buscando otras
                         opciones!
@@ -151,7 +165,8 @@
 
     <div class="row mt-5 pt-4 border-top">
         <div class="col-lg-8 mx-auto">
-            <h4 class="fw-bold mb-4 text-dark"><i class="bi bi-chat-left-text-fill text-uis-verde me-2"></i>Comentarios ({{ comentarios.count|default:"0" }})</h4>
+            <h4 class="fw-bold mb-4 text-dark"><i class="bi bi-chat-left-text-fill text-uis-verde me-2"></i>Comentarios
+                ({{ comentarios.count|default:"0" }})</h4>
             <div class="card p-4 shadow-sm border-0 bg-light mb-4" style="border-radius: 10px;">
                 <h6 class="fw-bold text-dark mb-3">Deja tu opinión o hazle una pregunta al vendedor</h6>
                 <form method="post" action="{% url 'detalle_producto' producto.id %}">
@@ -188,10 +203,17 @@
                 {% for c in comentarios %}
                 <div class="p-3 mb-3 bg-white border rounded-3 shadow-xs position-relative">
                     <div class="d-flex justify-content-between align-items-center mb-1.5">
-                        <span class="fw-bold text-dark small"><i class="bi bi-person me-1"></i>{{ c.author.username
-                            }}</span>
-                        <small class="text-muted" style="font-size: 0.75rem;">{{ c.created_at|date:"d M Y, h:i a"
-                            }}</small>
+                        <span class="fw-bold text-dark small"><i class="bi bi-person me-1"></i>{{c.author.username}}</span>
+                        <small class="text-muted" style="font-size: 0.75rem;">{{ c.created_at|date:"d M Y, h:ia"}}</small>
+                    </div>
+                    <p class="text-secondary mb-0 small" style="line-height: 1.4;">{{ c.content }}</p>
+                    <div class="text-warning small mb-1">
+                        {% with ''|center:c.rating as range %}
+                            {% for _ in range %}
+                                <i class="bi bi-star-fill"></i>
+                            {% endfor %}
+                        {% endwith %}
+                        <span class="text-muted ms-1">({{ c.rating }}/5)</span>
                     </div>
                     <p class="text-secondary mb-0 small" style="line-height: 1.4;">{{ c.content }}</p>
                 </div>
